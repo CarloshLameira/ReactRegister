@@ -4,13 +4,24 @@ import TextField from "@mui/material/TextField"
 import Switch from "@mui/material/Switch"
 import FormControlLabel from "@mui/material/FormControlLabel"
 
-function DadosPessoais( {onSubmit, validarCPF} ) {
+
+
+
+function DadosPessoais( {onSubmit, validacoes} ) {
         const [nome, setNome] = useState("");
         const [sobrenome, setSobrenome] = useState("")
         const [cpf, setCpf] = useState("")
         const [promo, setPromo] = useState(true)
         const [news, setNews] = useState(false)
         const [erros, setErros] = useState({cpf:{valido:true,texto:""}})
+
+        function validarCampos(event){
+                const{name, value} = event.target
+                const ehvalido = validacoes[name](value)
+                const novoEstado = {...erros} 
+                novoEstado[name] = ehvalido
+                setErros(novoEstado);
+}
         return (
                 <><form onSubmit={(event) => {
                         event.preventDefault();
@@ -25,7 +36,7 @@ function DadosPessoais( {onSubmit, validarCPF} ) {
                                                 tmpNome = tmpNome.substring(0, 3);
                                         }
                                         setNome(tmpNome);
-                                }} id="name" label="Nome" variant="outlined" fullWidth margin="normal" />
+                                }} id="name" label="Nome" variant="outlined" required fullWidth margin="normal" />
 
                         <TextField
                                 value={sobrenome}
@@ -36,7 +47,7 @@ function DadosPessoais( {onSubmit, validarCPF} ) {
                                                tmpSobrenome = tmpSobrenome.substring(0, 3)
                                         }
                                         setSobrenome(tmpSobrenome)
-                                }} id="lastname" label="Sobrenome" variant="outlined" fullWidth margin="normal" />
+                                }} id="lastname" label="Sobrenome" variant="outlined" required fullWidth margin="normal" />
 
 
                         <TextField
@@ -50,11 +61,8 @@ function DadosPessoais( {onSubmit, validarCPF} ) {
                                         setCpf(tmpCPF)
                                 }
                                 } 
-                                onBlur={(event)=>{
-                                        const ehvalido = validarCPF(event.target.value)
-                                        setErros({cpf:ehvalido});
-                                }}
-                                error={!erros.cpf.valido} helperText={erros.cpf.texto} id="cpf" label="CPF" variant="outlined" fullWidth margin="normal" />
+                                onBlur={validarCampos}
+                                error={!erros.cpf.valido} helperText={erros.cpf.texto} name="cpf" id="cpf" label="CPF" variant="outlined" required fullWidth margin="normal" />
 
                         <FormControlLabel label="Promoções " control={<Switch 
                         checked = {promo}
